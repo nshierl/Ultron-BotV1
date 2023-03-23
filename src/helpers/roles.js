@@ -2,6 +2,8 @@
 
 const { Client } = require("pg")
 
+var roles = null
+
 module.exports = {
 
     async setup(client) {
@@ -38,7 +40,50 @@ module.exports = {
         await db_client.end()
     },
 
-    async fetch_role(client, role_id) {
+    async fetch_roles(client, guild_id = null, force = false) {
 
-    }
+        //If we need to grab privileges from db
+        if (!(roles == null) || force) {
+            client_id = process.env.CLIENT_ID
+
+            db_client = new Client(client.db_credentials)
+            await db_client.connect()
+
+            qstring = `select * from discord_roles where client_id = $1`
+
+            results = await db_client.query(qstring, [client_id])
+
+            await db_client.end()
+
+            console.log(results)
+
+            if (results.rowCount <= 0) {
+                roles = null
+                return null
+            }
+
+            roles = {}
+
+            results.rows.forEach(row => {
+                console.log(row.guild_id)
+                console.log(row.role_name)
+                if (!(row.guild_id in roles)) {
+                    roles[row.guild_id] = {}
+                }
+
+                roles[row.guild_id][row.role_name] = row
+            })
+            console.log(roles)
+        }
+        if (guild_id) {
+            console.log(roles[guild_id])
+            if (!roles[guild_id]) {
+                return null
+            }
+            return roles[guild_id]
+        }
+
+        return roles
+
+    },
 }

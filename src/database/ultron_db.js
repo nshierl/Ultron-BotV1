@@ -19,14 +19,15 @@ module.exports = {
         await db_client.connect()
         const test_results = await db_client.query("select * from bot_test_table")
         await db_client.end()
-        console.log(test_results.rows[0])
-
         client.db_credentials = credentials
-
+        console.log(test_results.rows[0])
     },
     async load_db(client) {
-        // await UltronGuilds.setup(client)
-        // await UltronRoles.setup(client)
-        // await UltronMembers.setup(client)
+        await UltronGuilds.setup(client)
+        await UltronRoles.setup(client)
+        await UltronMembers.setup(client)
+    },
+    fetch_credentials() {
+        return credentials
     }
 }

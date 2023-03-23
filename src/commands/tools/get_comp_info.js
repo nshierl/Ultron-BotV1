@@ -95,18 +95,18 @@ function make_link_modal(interaction, linkName) {
         link = comp_links[guildID][linkName]
     }
 
-    action = 'Create'
+    action = 'Create new'
 
     if (link) {
         console.log(link)
         customID = customID + `:${link.id}`
         description = link.link_description
-        action = 'Edit'
+        action = 'Edit existing'
     }
 
     const modal = new ModalBuilder()
         .setCustomId(customID)
-        .setTitle(`${action} Link for '${linkName}'`)
+        .setTitle(`${action} Link`)
 
     const linkNameInput = new TextInputBuilder()
         .setCustomId('linkName')
@@ -114,6 +114,8 @@ function make_link_modal(interaction, linkName) {
         .setValue(`${linkName}`)
         .setPlaceholder('Enter a name for this Link')
         .setStyle(TextInputStyle.Short)
+        .setRequired(true)
+        .setMaxLength(64)
 
     const linkDescriptionInput = new TextInputBuilder()
         .setCustomId('linkDescription')
@@ -121,6 +123,8 @@ function make_link_modal(interaction, linkName) {
         .setValue(description)
         .setPlaceholder(`Enter a description/value for this Link`)
         .setStyle(TextInputStyle.Paragraph)
+        .setMaxLength(1024)
+        .setRequired(false)
 
     modal.addComponents(new ActionRowBuilder().addComponents(linkNameInput));
     modal.addComponents(new ActionRowBuilder().addComponents(linkDescriptionInput));
@@ -139,7 +143,6 @@ async function fetch_links(client, force = false) {
         comp_links = {}
         results.rows.forEach(row => {
             if (!(row.guild_id in comp_links)) {
-                console.log(`Adding new guild ${row.guild_id} to comp_links`)
                 comp_links[`${row.guild_id}`] = {}
             }
             comp_links[`${row.guild_id}`][`${row.link_name}`] = row

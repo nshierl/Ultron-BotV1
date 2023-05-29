@@ -41,7 +41,7 @@ module.exports = {
                 ultronmember = ultronmember[0]
 
                 await ultronmember.addUltronGuild(ultronguild)
-
+                
                 roles = member[1].roles.cache
                 for (role of roles) {
                     roleId = role[1].id
